@@ -185,8 +185,7 @@ async function doRender (req, res, pathname, query, {
     dynamicImports,
     assetPrefix, // We always pass assetPrefix as a top level property since _document needs it to render, even though the client side might not need it
     ...docProps
-  };
-
+  }
 
   if (renderMethod.toString() === renderToNodeStream.toString() || renderMethod.toString() === renderToStaticNodeStream.toString()) {
     const parts = renderPage()
@@ -195,8 +194,7 @@ async function doRender (req, res, pathname, query, {
   }
   if (!Document.prototype || !Document.prototype.isReactComponent) throw new Error('_document.js is not exporting a React component')
 
-
-  const doc = <Document {...docFormattedProps} />;
+  const doc = <Document {...docFormattedProps} />
 
   return '<!DOCTYPE html>' + renderToStaticMarkup(doc)
 }
