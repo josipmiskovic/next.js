@@ -79,30 +79,30 @@ export default class DevServer extends Server {
     return routes
   }
 
-  async renderToHTML (req, res, pathname, query) {
+  async renderToHTML (req, res, pathname, query, opts) {
     const compilationErr = await this.getCompilationError(pathname)
     if (compilationErr) {
       res.statusCode = 500
-      return this.renderErrorToHTML(compilationErr, req, res, pathname, query)
+      return this.renderErrorToHTML(compilationErr, req, res, pathname, query, opts)
     }
 
-    return super.renderToHTML(req, res, pathname, query)
+    return super.renderToHTML(req, res, pathname, query, opts)
   }
 
-  async renderErrorToHTML (err, req, res, pathname, query) {
+  async renderErrorToHTML (err, req, res, pathname, query, opts) {
     const compilationErr = await this.getCompilationError(pathname)
     if (compilationErr) {
       res.statusCode = 500
-      return super.renderErrorToHTML(compilationErr, req, res, pathname, query)
+      return super.renderErrorToHTML(compilationErr, req, res, pathname, query, opts)
     }
 
     try {
-      const out = await super.renderErrorToHTML(err, req, res, pathname, query)
+      const out = await super.renderErrorToHTML(err, req, res, pathname, query, opts)
       return out
     } catch (err2) {
       if (!this.quiet) console.error(err2)
       res.statusCode = 500
-      return super.renderErrorToHTML(err2, req, res, pathname, query)
+      return super.renderErrorToHTML(err2, req, res, pathname, query, opts)
     }
   }
 

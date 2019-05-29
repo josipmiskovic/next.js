@@ -194,18 +194,18 @@ export default class Server {
     return sendHTML(req, res, html, req.method, this.renderOpts)
   }
 
-  async renderToHTML (req, res, pathname, query) {
+  async renderToHTML (req, res, pathname, query, opts) {
     try {
-      const out = await renderToHTML(req, res, pathname, query, this.renderOpts)
+      const out = await renderToHTML(req, res, pathname, query, {...this.renderOpts, ...opts})
       return out
     } catch (err) {
       if (err.code === 'ENOENT') {
         res.statusCode = 404
-        return this.renderErrorToHTML(null, req, res, pathname, query)
+        return this.renderErrorToHTML(null, req, res, pathname, query, opts)
       } else {
         if (!this.quiet) console.error(err)
         res.statusCode = 500
-        return this.renderErrorToHTML(err, req, res, pathname, query)
+        return this.renderErrorToHTML(err, req, res, pathname, query, opts)
       }
     }
   }
@@ -215,8 +215,8 @@ export default class Server {
     return sendHTML(req, res, html, req.method, this.renderOpts)
   }
 
-  async renderErrorToHTML (err, req, res, pathname, query) {
-    return renderErrorToHTML(err, req, res, pathname, query, this.renderOpts)
+  async renderErrorToHTML (err, req, res, pathname, query, opts) {
+    return renderErrorToHTML(err, req, res, pathname, query, {...this.renderOpts, ...opts})
   }
 
   async render404 (req, res, parsedUrl = parseUrl(req.url, true)) {

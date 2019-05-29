@@ -1,6 +1,6 @@
 import { join } from 'path'
 import React from 'react'
-import { renderToString, renderToStaticMarkup } from 'react-dom/server'
+import { renderToNodeStream, renderToStaticNodeStream, renderToString, renderToStaticMarkup } from 'react-dom/server'
 import send from 'send'
 import generateETag from 'etag'
 import fresh from 'fresh'
@@ -67,7 +67,8 @@ async function doRender (req, res, pathname, query, {
   dir,
   dev = false,
   staticMarkup = false,
-  nextExport
+  nextExport,
+  renderMethod = renderToString
 } = {}) {
   page = page || pathname
 
@@ -135,7 +136,7 @@ async function doRender (req, res, pathname, query, {
       }} />
     </LoadableCapture>
 
-    const render = staticMarkup ? renderToStaticMarkup : renderToString
+    const render = staticMarkup ? renderToStaticMarkup : renderMethod
 
     let html
     let head
@@ -163,8 +164,7 @@ async function doRender (req, res, pathname, query, {
 
   if (isResSent(res)) return
 
-  if (!Document.prototype || !Document.prototype.isReactComponent) throw new Error('_document.js is not exporting a React component')
-  const doc = <Document {...{
+  const docFormattedProps = {
     __NEXT_DATA__: {
       props, // The result of getInitialProps
       page, // The rendered page
@@ -185,7 +185,18 @@ async function doRender (req, res, pathname, query, {
     dynamicImports,
     assetPrefix, // We always pass assetPrefix as a top level property since _document needs it to render, even though the client side might not need it
     ...docProps
-  }} />
+  };
+
+
+  if (renderMethod.toString() === renderToNodeStream.toString() || renderMethod.toString() === renderToStaticNodeStream.toString()) {
+    const parts = renderPage()
+    parts.docProps = docFormattedProps
+    return parts
+  }
+  if (!Document.prototype || !Document.prototype.isReactComponent) throw new Error('_document.js is not exporting a React component')
+
+
+  const doc = <Document {...docFormattedProps} />;
 
   return '<!DOCTYPE html>' + renderToStaticMarkup(doc)
 }

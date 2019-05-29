@@ -44,7 +44,7 @@ export class Head extends Component {
   }
 
   getCssLinks () {
-    const { assetPrefix, files } = this.context._documentProps
+    const { assetPrefix, files } = this.context._documentProps || this.props._documentprops
     if(!files || files.length === 0) {
       return null
     }
@@ -65,7 +65,7 @@ export class Head extends Component {
   }
 
   getPreloadDynamicChunks () {
-    const { dynamicImports, assetPrefix } = this.context._documentProps
+    const { dynamicImports, assetPrefix } = this.context._documentProps || this.props._documentprops
     return dynamicImports.map((bundle) => {
       return <link
         rel='preload'
@@ -78,7 +78,7 @@ export class Head extends Component {
   }
 
   getPreloadMainLinks () {
-    const { assetPrefix, files } = this.context._documentProps
+    const { assetPrefix, files } = this.context._documentProps || this.props._documentprops
     if(!files || files.length === 0) {
       return null
     }
@@ -100,7 +100,7 @@ export class Head extends Component {
   }
 
   render () {
-    const { head, styles, assetPrefix, __NEXT_DATA__ } = this.context._documentProps
+    const { head, styles, assetPrefix, __NEXT_DATA__ } = this.context._documentProps || this.props._documentprops
     const { page, buildId } = __NEXT_DATA__
     const pagePathname = getPagePathname(page)
 
@@ -135,7 +135,7 @@ export class Main extends Component {
   }
 
   render () {
-    const { html } = this.context._documentProps
+    const { html } = this.context._documentProps || this.props._documentprops
     return (
       <div id='__next' dangerouslySetInnerHTML={{ __html: html }} />
     )
@@ -152,7 +152,7 @@ export class NextScript extends Component {
   }
 
   getDynamicChunks () {
-    const { dynamicImports, assetPrefix } = this.context._documentProps
+    const { dynamicImports, assetPrefix } = this.context._documentProps || this.props._documentprops
     return dynamicImports.map((bundle) => {
       return <script
         async
@@ -164,7 +164,7 @@ export class NextScript extends Component {
   }
 
   getScripts () {
-    const { assetPrefix, files } = this.context._documentProps
+    const { assetPrefix, files } = this.context._documentProps || this.props._documentprops
     if(!files || files.length === 0) {
       return null
     }
@@ -191,14 +191,14 @@ export class NextScript extends Component {
   }
 
   render () {
-    const { staticMarkup, assetPrefix, devFiles, __NEXT_DATA__ } = this.context._documentProps
+    const { staticMarkup, assetPrefix, devFiles, __NEXT_DATA__ } = this.context._documentProps || this.props._documentprops
     const { page, buildId } = __NEXT_DATA__
     const pagePathname = getPagePathname(page)
 
     return <Fragment>
       {devFiles ? devFiles.map((file) => <script key={file} src={`${assetPrefix}/_next/${file}`} nonce={this.props.nonce} />) : null}
       {staticMarkup ? null : <script nonce={this.props.nonce} dangerouslySetInnerHTML={{
-        __html: NextScript.getInlineScriptSource(this.context._documentProps)
+        __html: NextScript.getInlineScriptSource(this.context._documentProps || this.props._documentprops)
       }} />}
       {page !== '/_error' && <script async id={`__NEXT_PAGE__${page}`} src={`${assetPrefix}/_next/static/${buildId}/pages${pagePathname}`} nonce={this.props.nonce} />}
       <script async id={`__NEXT_PAGE__/_app`} src={`${assetPrefix}/_next/static/${buildId}/pages/_app.js`} nonce={this.props.nonce} />
