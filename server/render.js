@@ -1,6 +1,6 @@
 import { join } from 'path'
 import React from 'react'
-import { renderToNodeStream, renderToStaticNodeStream, renderToString, renderToStaticMarkup } from 'react-dom/server'
+import { renderToString, renderToStaticMarkup } from 'react-dom/server'
 import send from 'send'
 import generateETag from 'etag'
 import fresh from 'fresh'
@@ -187,11 +187,12 @@ async function doRender (req, res, pathname, query, {
     ...docProps
   }
 
-  if (renderMethod.toString() === renderToNodeStream.toString() || renderMethod.toString() === renderToStaticNodeStream.toString()) {
+  if (renderMethod.name === 'renderToNodeStream' || renderMethod.name === 'renderToStaticNodeStream') {
     const parts = renderPage()
     parts.docProps = docFormattedProps
     return parts
   }
+
   if (!Document.prototype || !Document.prototype.isReactComponent) throw new Error('_document.js is not exporting a React component')
 
   const doc = <Document {...docFormattedProps} />
